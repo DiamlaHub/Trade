@@ -1,0 +1,122 @@
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "TradeGUI"
+
+-- Utility: Rounded Frame with Stroke
+local function createRoundedFrame(parent, position, size)
+	local frame = Instance.new("Frame", parent)
+	frame.Position = position
+	frame.Size = size
+	frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	frame.BorderSizePixel = 0
+	frame.ClipsDescendants = true
+	frame.Active = true
+	frame.Draggable = true
+
+	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+	Instance.new("UIStroke", frame).Color = Color3.new(1, 1, 1)
+
+	return frame
+end
+
+-- Modern Toggle Switch
+local function createAnimatedSwitch(parent, labelText, position)
+	local label = Instance.new("TextLabel", parent)
+	label.Text = labelText
+	label.Position = position
+	label.Size = UDim2.new(0, 120, 0, 25)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.TextXAlignment = Enum.TextXAlignment.Left
+
+	-- Switch background
+	local switch = Instance.new("Frame", parent)
+	switch.Position = position + UDim2.new(0, 130, 0, 0)
+	switch.Size = UDim2.new(0, 50, 0, 25)
+	switch.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+	switch.BorderSizePixel = 0
+
+	Instance.new("UICorner", switch).CornerRadius = UDim.new(0, 12)
+	Instance.new("UIStroke", switch).Color = Color3.new(1, 1, 1)
+
+	-- Toggle dot
+	local dot = Instance.new("Frame", switch)
+	dot.Size = UDim2.new(0, 20, 0, 20)
+	dot.Position = UDim2.new(0, 3, 0, 2.5)
+	dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	dot.BorderSizePixel = 0
+	Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+	local toggleState = false
+
+	-- Transparent button for clicks
+	local button = Instance.new("TextButton", switch)
+	button.BackgroundTransparency = 1
+	button.Size = UDim2.new(1, 0, 1, 0)
+	button.Text = ""
+
+	button.MouseButton1Click:Connect(function()
+		toggleState = not toggleState
+		dot:TweenPosition(
+			UDim2.new(0, toggleState and 27 or 3, 0, 2.5),
+			Enum.EasingDirection.Out,
+			Enum.EasingStyle.Sine,
+			0.15,
+			true
+		)
+		switch.BackgroundColor3 = toggleState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+	end)
+
+	return {
+		switch = switch,
+		getState = function() return toggleState end,
+		setState = function(value)
+			toggleState = value
+			dot.Position = UDim2.new(0, toggleState and 27 or 3, 0, 2.5)
+			switch.BackgroundColor3 = toggleState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+		end
+	}
+end
+
+-- Create main window
+local mainFrame = createRoundedFrame(screenGui, UDim2.new(0.4, 0, 0.3, 0), UDim2.new(0, 220, 0, 170))
+
+-- Title
+local title = Instance.new("TextLabel", mainFrame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = "TRADE PANEL"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+
+-- User label and input box
+local userLabel = Instance.new("TextLabel", mainFrame)
+userLabel.Position = UDim2.new(0, 10, 0, 35)
+userLabel.Size = UDim2.new(0, 50, 0, 25)
+userLabel.Text = "User:"
+userLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+userLabel.BackgroundTransparency = 1
+userLabel.Font = Enum.Font.Gotham
+userLabel.TextSize = 14
+
+local userBox = Instance.new("TextBox", mainFrame)
+userBox.Position = UDim2.new(0, 60, 0, 35)
+userBox.Size = UDim2.new(0, 140, 0, 25)
+userBox.PlaceholderText = "Type Here"
+userBox.Text = ""
+userBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+userBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+userBox.Font = Enum.Font.Gotham
+userBox.TextSize = 14
+Instance.new("UICorner", userBox).CornerRadius = UDim.new(0, 8)
+
+-- Switches
+local freezeToggle = createAnimatedSwitch(mainFrame, "Freeze Trade", UDim2.new(0, 10, 0, 70))
+local autoAcceptToggle = createAnimatedSwitch(mainFrame, "Auto Accept", UDim2.new(0, 10, 0, 110))
+
+-- Example use: checking toggle state
+-- print("Freeze Trade ON:", freezeToggle.getState())
+-- print("Auto Accept ON:", autoAcceptToggle.getState())
