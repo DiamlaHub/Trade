@@ -31,21 +31,6 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 
--- Close button "X"
-local closeBtn = Instance.new("TextButton", mainFrame)
-closeBtn.Size = UDim2.new(0, 25, 0, 25)
-closeBtn.Position = UDim2.new(1, -30, 0, 5)
-closeBtn.Text = "X"
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 16
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
-
-closeBtn.MouseButton1Click:Connect(function()
-	screenGui:Destroy()
-end)
-
 -- Profile Frame
 local profileFrame = Instance.new("Frame", mainFrame)
 profileFrame.Position = UDim2.new(0, 10, 0, 40)
@@ -86,7 +71,6 @@ listLayout.Padding = UDim.new(0, 4)
 
 -- Refresh Function with flicker effect
 local function refreshPlayers()
-	-- Flicker effect
 	local originalColor = playerList.BackgroundColor3
 	playerList.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 	wait(0.1)
