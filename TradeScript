@@ -2,7 +2,7 @@ local player = game.Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 screenGui.Name = "TradeGUI"
 
--- Utility: Rounded Frame with Stroke
+-- Utility: Rounded Frame
 local function createRoundedFrame(parent, position, size)
 	local frame = Instance.new("Frame", parent)
 	frame.Position = position
@@ -19,69 +19,8 @@ local function createRoundedFrame(parent, position, size)
 	return frame
 end
 
--- Modern Toggle Switch
-local function createAnimatedSwitch(parent, labelText, position)
-	local label = Instance.new("TextLabel", parent)
-	label.Text = labelText
-	label.Position = position
-	label.Size = UDim2.new(0, 120, 0, 25)
-	label.BackgroundTransparency = 1
-	label.TextColor3 = Color3.fromRGB(255, 255, 255)
-	label.Font = Enum.Font.Gotham
-	label.TextSize = 14
-	label.TextXAlignment = Enum.TextXAlignment.Left
-
-	-- Switch background
-	local switch = Instance.new("Frame", parent)
-	switch.Position = position + UDim2.new(0, 130, 0, 0)
-	switch.Size = UDim2.new(0, 50, 0, 25)
-	switch.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-	switch.BorderSizePixel = 0
-
-	Instance.new("UICorner", switch).CornerRadius = UDim.new(0, 12)
-	Instance.new("UIStroke", switch).Color = Color3.new(1, 1, 1)
-
-	-- Toggle dot
-	local dot = Instance.new("Frame", switch)
-	dot.Size = UDim2.new(0, 20, 0, 20)
-	dot.Position = UDim2.new(0, 3, 0, 2.5)
-	dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	dot.BorderSizePixel = 0
-	Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-
-	local toggleState = false
-
-	-- Transparent button for clicks
-	local button = Instance.new("TextButton", switch)
-	button.BackgroundTransparency = 1
-	button.Size = UDim2.new(1, 0, 1, 0)
-	button.Text = ""
-
-	button.MouseButton1Click:Connect(function()
-		toggleState = not toggleState
-		dot:TweenPosition(
-			UDim2.new(0, toggleState and 27 or 3, 0, 2.5),
-			Enum.EasingDirection.Out,
-			Enum.EasingStyle.Sine,
-			0.15,
-			true
-		)
-		switch.BackgroundColor3 = toggleState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-	end)
-
-	return {
-		switch = switch,
-		getState = function() return toggleState end,
-		setState = function(value)
-			toggleState = value
-			dot.Position = UDim2.new(0, toggleState and 27 or 3, 0, 2.5)
-			switch.BackgroundColor3 = toggleState and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-		end
-	}
-end
-
--- Create main window
-local mainFrame = createRoundedFrame(screenGui, UDim2.new(0.4, 0, 0.3, 0), UDim2.new(0, 220, 0, 170))
+-- Main Window
+local mainFrame = createRoundedFrame(screenGui, UDim2.new(0.35, 0, 0.25, 0), UDim2.new(0, 260, 0, 320))
 
 -- Title
 local title = Instance.new("TextLabel", mainFrame)
@@ -92,31 +31,177 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 
--- User label and input box
-local userLabel = Instance.new("TextLabel", mainFrame)
-userLabel.Position = UDim2.new(0, 10, 0, 35)
-userLabel.Size = UDim2.new(0, 50, 0, 25)
-userLabel.Text = "User:"
-userLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-userLabel.BackgroundTransparency = 1
-userLabel.Font = Enum.Font.Gotham
-userLabel.TextSize = 14
+-- Close button "X"
+local closeBtn = Instance.new("TextButton", mainFrame)
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 5)
 
-local userBox = Instance.new("TextBox", mainFrame)
-userBox.Position = UDim2.new(0, 60, 0, 35)
-userBox.Size = UDim2.new(0, 140, 0, 25)
-userBox.PlaceholderText = "Type Here"
-userBox.Text = ""
-userBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-userBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-userBox.Font = Enum.Font.Gotham
-userBox.TextSize = 14
-Instance.new("UICorner", userBox).CornerRadius = UDim.new(0, 8)
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
 
--- Switches
-local freezeToggle = createAnimatedSwitch(mainFrame, "Freeze Trade", UDim2.new(0, 10, 0, 70))
-local autoAcceptToggle = createAnimatedSwitch(mainFrame, "Auto Accept", UDim2.new(0, 10, 0, 110))
+-- Profile Frame
+local profileFrame = Instance.new("Frame", mainFrame)
+profileFrame.Position = UDim2.new(0, 10, 0, 40)
+profileFrame.Size = UDim2.new(0, 240, 0, 80)
+profileFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+profileFrame.BorderSizePixel = 0
+Instance.new("UICorner", profileFrame).CornerRadius = UDim.new(0, 10)
 
--- Example use: checking toggle state
--- print("Freeze Trade ON:", freezeToggle.getState())
--- print("Auto Accept ON:", autoAcceptToggle.getState())
+-- Avatar centered
+local avatar = Instance.new("ImageLabel", profileFrame)
+avatar.Size = UDim2.new(0, 50, 0, 50)
+avatar.Position = UDim2.new(0.5, -25, 0, 5)
+avatar.BackgroundTransparency = 1
+
+-- Name below avatar
+local profileName = Instance.new("TextLabel", profileFrame)
+profileName.Position = UDim2.new(0, 0, 0, 60)
+profileName.Size = UDim2.new(1, 0, 0, 20)
+profileName.BackgroundTransparency = 1
+profileName.Text = "No User"
+profileName.TextColor3 = Color3.fromRGB(255, 255, 255)
+profileName.Font = Enum.Font.Gotham
+profileName.TextSize = 16
+profileName.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Player List (5 visible)
+local playerList = Instance.new("ScrollingFrame", mainFrame)
+playerList.Position = UDim2.new(0, 10, 0, 130)
+playerList.Size = UDim2.new(0, 160, 0, 35*5 + 4*4)
+playerList.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+playerList.BorderSizePixel = 0
+playerList.ScrollBarThickness = 6
+Instance.new("UICorner", playerList).CornerRadius = UDim.new(0, 8)
+
+local listLayout = Instance.new("UIListLayout", playerList)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 4)
+
+-- Refresh Function with flicker effect
+local function refreshPlayers()
+	-- Flicker effect
+	local originalColor = playerList.BackgroundColor3
+	playerList.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+	wait(0.1)
+	playerList.BackgroundColor3 = originalColor
+
+	for _, child in ipairs(playerList:GetChildren()) do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+
+	for _, plr in pairs(game.Players:GetPlayers()) do
+		local button = Instance.new("TextButton", playerList)
+		button.Size = UDim2.new(1, -4, 0, 35)
+		button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		button.Text = plr.Name
+		button.TextColor3 = Color3.fromRGB(255, 255, 255)
+		button.Font = Enum.Font.Gotham
+		button.TextSize = 14
+		Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+		button.MouseButton1Click:Connect(function()
+			profileName.Text = plr.Name
+			local content, _ = game.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+			avatar.Image = content
+		end)
+	end
+end
+
+refreshPlayers()
+
+-- Buttons Frame (right side)
+local buttonsFrame = Instance.new("Frame", mainFrame)
+buttonsFrame.Position = UDim2.new(0, 175, 0, 130)
+buttonsFrame.Size = UDim2.new(0, 75, 0, playerList.Size.Y.Offset)
+buttonsFrame.BackgroundTransparency = 1
+
+local uiList = Instance.new("UIListLayout", buttonsFrame)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Padding = UDim.new(0, 10)
+
+-- Refresh Players Button
+local refreshBtn = Instance.new("TextButton", buttonsFrame)
+refreshBtn.Size = UDim2.new(1, 0, 0, 35)
+refreshBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+refreshBtn.Text = "Refresh Players"
+refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshBtn.Font = Enum.Font.GothamBold
+refreshBtn.TextSize = 14
+Instance.new("UICorner", refreshBtn).CornerRadius = UDim.new(1, 0)
+
+refreshBtn.MouseButton1Click:Connect(function()
+	local tweenService = game:GetService("TweenService")
+	local spinTween = tweenService:Create(refreshBtn, TweenInfo.new(0.4, Enum.EasingStyle.Linear), {Rotation = refreshBtn.Rotation + 360})
+	spinTween:Play()
+	refreshPlayers()
+end)
+
+-- Modern Switch Function (label above, switch below)
+local function createSwitch(parent, labelText)
+	local container = Instance.new("Frame", parent)
+	container.Size = UDim2.new(1, 0, 0, 50)
+	container.BackgroundTransparency = 1
+
+	-- Label on top
+	local label = Instance.new("TextLabel", container)
+	label.Text = labelText
+	label.Size = UDim2.new(1, 0, 0, 15)
+	label.Position = UDim2.new(0, 0, 0, 0)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 12
+	label.TextXAlignment = Enum.TextXAlignment.Center
+
+	-- Switch below
+	local switch = Instance.new("Frame", container)
+	switch.Size = UDim2.new(0, 35, 0, 15)
+	switch.Position = UDim2.new(0.5, -17, 0, 20)
+	switch.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+	switch.BorderSizePixel = 0
+	Instance.new("UICorner", switch).CornerRadius = UDim.new(1, 0)
+
+	local dot = Instance.new("Frame", switch)
+	dot.Size = UDim2.new(0, 13, 0, 13)
+	dot.Position = UDim2.new(0, 1, 0, 1)
+	dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+	local state = false
+	local function updateSwitch()
+		if state then
+			switch.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+			dot:TweenPosition(UDim2.new(1, -14, 0, 1), Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.15, true)
+		else
+			switch.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+			dot:TweenPosition(UDim2.new(0, 1, 0, 1), Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.15, true)
+		end
+	end
+
+	local btn = Instance.new("TextButton", switch)
+	btn.BackgroundTransparency = 1
+	btn.Size = UDim2.new(1, 0, 1, 0)
+	btn.Text = ""
+	btn.MouseButton1Click:Connect(function()
+		state = not state
+		updateSwitch()
+	end)
+
+	updateSwitch()
+	return {switch = switch, getState = function() return state end}
+end
+
+-- Auto Accept Switch
+local autoAcceptSwitch = createSwitch(buttonsFrame, "Auto Accept")
+
+-- Freeze Trade Switch
+local freezeTradeSwitch = createSwitch(buttonsFrame, "Freeze Trade")
